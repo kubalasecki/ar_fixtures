@@ -75,13 +75,20 @@ class ActiveRecord::Base
     # Uses existing data in the database.
     #
     # Will be written to +test/fixtures/table_name.yml+. Can be restricted to some number of rows.
-    def to_fixture(limit=nil, key=nil, opts={})
-      opts[:limit] = limit if limit
+    def to_fixture(limit=nil, key=nil)
+      str = "--- \n"
+      self.limit(limit).order("id ASC").each do |record|
+        name = case
+        when record.respond_to?('fixture_name') then record.fixture_name
+        when record.respond_to?('name') then record.name.underscore.gsub(/\W/,'_')
+        else table_name.singularize
+        end
+        name << "_#{record.id}"
+        name.gsub!(/(_)+/,'_')
+        str << {name => record.attributes}.to_yaml(:SortKeys => true).gsub("--- \n","")
+      end
 
-      write_file(File.expand_path("test/fixtures/#{table_name}.yml", RAILS_ROOT),
-      self.find(:all, opts).inject({}) { |hsh, record|
-        hsh.merge((record.attributes[key.to_s] || "#{table_name.singularize}_#{'%05i' % record.id rescue record.id}") => record.attributes)
-      }.to_yaml(:SortKeys => true))
+      write_file(Rails.root.join("test/fixtures/#{table_name}.yml").to_s, str)
       habtm_to_fixture
     end
 
