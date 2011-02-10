@@ -77,7 +77,7 @@ class ActiveRecord::Base
     # Will be written to +test/fixtures/table_name.yml+. Can be restricted to some number of rows.
     def to_fixture(limit=nil, key=nil)
       str = "--- \n"
-      self.limit(limit).order("id ASC").each do |record|
+      self.limit(limit).order(self.primary_key).each do |record|
         name = case
         when record.respond_to?('fixture_name') then record.fixture_name
         when record.respond_to?('name') then record.name.underscore.gsub(/\W/,'_')
