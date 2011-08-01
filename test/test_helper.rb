@@ -1,5 +1,5 @@
 $:.unshift(File.dirname(__FILE__) + '/../lib')
-RAILS_ROOT = File.dirname(__FILE__)
+Rails.root = File.dirname(__FILE__)
 
 require 'rubygems'
 require 'test/unit'
@@ -16,7 +16,7 @@ load(File.dirname(__FILE__) + "/schema.rb") if File.exist?(File.dirname(__FILE__
 Test::Unit::TestCase.fixture_path = File.dirname(__FILE__) + "/fixtures/"
 $LOAD_PATH.unshift(Test::Unit::TestCase.fixture_path)
 
-RAILS_ENV = 'test' unless defined?(RAILS_ENV)
+Rails.env = 'test' unless defined?(Rails.env)
 
 class Test::Unit::TestCase #:nodoc:
   def create_fixtures(*table_names)
